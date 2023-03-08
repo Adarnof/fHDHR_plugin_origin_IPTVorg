@@ -26,7 +26,7 @@ This plugin is proof of concept
 
 ````
 [iptvorg]
-# filter_countries = United States
-# filter_languages = English
+# filter_countries = US
+# filter_languages = eng
 # filter_category = none
 ````
