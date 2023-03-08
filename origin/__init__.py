@@ -6,6 +6,7 @@ class Plugin_OBJ():
         self.plugin_utils = plugin_utils
 
         self.channels_json_url = "https://iptv-org.github.io/api/channels.json"
+        self.streams_json_url = "https://iptv-org.github.io/api/streams.json"
 
         self.filter_dict = {}
         self.setup_filters()
@@ -71,8 +72,17 @@ class Plugin_OBJ():
         return stream_info
 
     def get_unfiltered_chan_json(self):
-        urlopn = self.plugin_utils.web.session.get(self.channels_json_url)
-        return urlopn.json()
+        channels = self.plugin_utils.web.session.get(self.channels_json_url).json()
+        channel_map = {c['id']: c for c in channels}
+
+        streams = self.plugin_utils.web.session.get(self.streams_json_url).json()
+        stream_map = {s['channel']: s for s in streams}
+
+        for s in stream_map:
+            if s in channel_map:
+                channel_map[s].update(stream_map[s])
+        
+        return list(channel_map.values())
 
     def filterlist(self):
 
