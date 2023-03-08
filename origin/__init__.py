@@ -11,8 +11,8 @@ class Plugin_OBJ():
         self.filter_dict = {}
         self.setup_filters()
 
-        self.unfiltered_chan_json = None
-        self.filtered_chan_json = None
+        self.unfiltered_chan_json = []
+        self.filtered_chan_json = []
 
     @property
     def filtered_chan_list(self):
@@ -65,7 +65,7 @@ class Plugin_OBJ():
 
     def get_channel_stream(self, chandict, stream_args):
         streamdict = self.get_channel_dict(self.filtered_chan_list, "name", chandict["origin_name"])
-        streamurl = streamdict["url"]
+        streamurl = streamdict["stream"]["url"]
 
         stream_info = {"url": streamurl}
 
@@ -83,7 +83,8 @@ class Plugin_OBJ():
         for s in stream_map:
             if s in channel_map:
                 channel = channel_map[s]
-                available_channels.append(channel.update(stream_map[s]))
+                channel['stream'] = stream_map[s]
+                available_channels.append(channel)
 
         return available_channels
 
