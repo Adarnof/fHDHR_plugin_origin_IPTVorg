@@ -5,7 +5,7 @@ class Plugin_OBJ():
     def __init__(self, plugin_utils):
         self.plugin_utils = plugin_utils
 
-        self.channels_json_url = "https://iptv-org.github.io/iptv/channels.json"
+        self.channels_json_url = "https://iptv-org.github.io/api/channels.json"
 
         self.filter_dict = {}
         self.setup_filters()
@@ -84,37 +84,19 @@ class Plugin_OBJ():
                 if not len(self.filter_dict[filter_key]):
                     filters_passed.append(True)
                 else:
-                    if filter_key in list(channels_item.keys()):
-                        if filter_key in ["countries", "languages"]:
-                            if isinstance(channels_item[filter_key], list):
-                                if len(channels_item[filter_key]):
-                                    chan_values = []
-                                    chan_values.extend([x["name"] for x in channels_item[filter_key]])
-                                    chan_values.extend([x["code"] for x in channels_item[filter_key]])
-                                else:
-                                    chan_values = []
-                            else:
-                                chan_values = []
-                                chan_values.append(channels_item[filter_key]["name"])
-                                chan_values.append(channels_item[filter_key]["code"])
-                        elif filter_key in ["category"]:
-                            chan_values = [channels_item[filter_key]]
-                    else:
-                        chan_values = []
-
-                    if not len(chan_values):
-                        filter_passed = False
-                    else:
-                        values_passed = []
-                        for chan_value in chan_values:
-                            if str(chan_value).lower() in [x.lower() for x in self.filter_dict[filter_key]]:
-                                values_passed.append(True)
-                            else:
-                                values_passed.append(False)
-                        if True in values_passed:
+                    filter_passed = False
+                    if filter_key == "countries":
+                        if channels_item["country"] in self.filter_dict[filter_key]:
                             filter_passed = True
-                        else:
-                            filter_passed = False
+                    elif filter_key == "category":
+                        if self.filter_dict[filter_key] in channels_item["categories"]:
+                            filter_passed = True
+                    elif filter_key == "languages":
+                        if set(self.filter_dict[filter_key]).intersection(set(channels_item[filter_key])):
+                            filter_passed = True
+                    else:
+                        if self.filter_dict[filter_key] == channels_item[filter_key]:
+                            filter_passed = True
 
                     filters_passed.append(filter_passed)
 
