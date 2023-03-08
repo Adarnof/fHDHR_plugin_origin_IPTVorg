@@ -78,11 +78,14 @@ class Plugin_OBJ():
         streams = self.plugin_utils.web.session.get(self.streams_json_url).json()
         stream_map = {s['channel']: s for s in streams}
 
+        available_channels = []
+
         for s in stream_map:
             if s in channel_map:
-                channel_map[s].update(stream_map[s])
-        
-        return list(channel_map.values())
+                channel = channel_map[s]
+                available_channels.append(channel.update(stream_map[s]))
+
+        return available_channels
 
     def filterlist(self):
 
